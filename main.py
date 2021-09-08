@@ -10,4 +10,4 @@ if __name__ == '__main__':
     print(balance(count))
     print(efficiency(alphabet_dict_old))
     print(count_character_number(filename))
-    print(count_press_number(filename))
+    print(count_press_number(filename, "old"))

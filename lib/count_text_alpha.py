@@ -27,6 +27,10 @@ def count_character_number(filename: str):
     return character_number
 
 
-def count_press_number(filename: str):
-    press_number = sum(count_text(filename).values())
+# 统计使用全拼/新的编码方法所需的按键次数
+def count_press_number(filename: str, spelling_type: str):
+    if spelling_type == "old":
+        press_number = sum(count_text(filename).values())
+    elif spelling_type == "new":
+        press_number =
     return press_number
