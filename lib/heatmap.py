@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
-from scipy.interpolate import interp2d
+from scipy.interpolate import interp2d, griddata
 
 from lib.constants import alphabet
 
@@ -30,36 +30,31 @@ for i in range(len(alphabet)):
     ALPHA_POSITION[alphabet[i]] = KEYBOARD_KEY_POSITIONS[i]
 
 
-# 创建一个半透明 colormap 并注册到 plt
-def register_coolwarm_alpha_colormap(alpha: float) -> str:
-    ncolors = 256
-    color_array = plt.get_cmap('coolwarm')(range(ncolors))
-    color_array[:, -1] = alpha
-    map_object = LinearSegmentedColormap.from_list(name='coolwarm_alpha', colors=color_array)
-    plt.register_cmap(cmap=map_object)
-    return 'coolwarm_alpha'
-
-
-register_coolwarm_alpha_colormap(0.5)
-
-
 # 根据 xyz 坐标的散点图绘制热力图
 def draw_heatmap_by_scatter(x: list, y: list, z: list):
     # 读图片的长宽
     img = plt.imread(KEYBOARD_BACKGROUND)
     height, width = img.shape[0:2]
 
-    ip = interp2d(x, y, z, kind='linear')
-    x1 = np.arange(145, 1000)
-    y1 = np.arange(250, 500)
-    z2 = ip(x1, y1)
+    # ip = interp2d(x, y, z, kind='linear')
+    # x1 = np.arange(145, 1000)
+    # y1 = np.arange(250, 500)
+    x1 = np.arange(0, width)
+    y1 = np.arange(0, height)
+    # z2 = ip(x1, y1)
     x2, y2 = np.meshgrid(x1, y1)
+
+    x = np.asarray(x)
+    y = np.asarray(y)
+    z = np.asarray(z)
+    z2 = griddata((x, y), z, (x2, y2), method='linear')
 
     def draw_heatmap():
         fig, ax = plt.subplots()
-        fig.set_dpi(1000)
+        fig.set_dpi(300)
         ax.imshow(img)
-        im = ax.pcolormesh(x2, y2, z2, cmap='coolwarm_alpha', vmax=3000, vmin=0)
+        im = ax.pcolormesh(x2, y2, z2, cmap='coolwarm', alpha=0.5, vmax=3000, vmin=0)
+        # im = ax.contourf(x2, y2, z2, np.arange(0, 3000, 100),cmap='coolwarm', alpha=0.5, vmax=3000, vmin=0)
         ax.scatter(x[0:26], y[0:26])
         fig.colorbar(im, orientation='vertical')
         plt.show()
@@ -83,10 +78,10 @@ def draw_heatmap_by_alpha_count(alpha_count: dict):
         x.append(ALPHA_POSITION[alpha][0])
         y.append(ALPHA_POSITION[alpha][1])
         z.append(alpha_count[alpha])
-    # for i in range(len(KEYBOARD_BOUNDARY_POSITIONS)):
-    #     x.append(KEYBOARD_BOUNDARY_POSITIONS[i][0])
-    #     y.append(KEYBOARD_BOUNDARY_POSITIONS[i][1])
-    #     z.append(0)
+    for i in range(len(KEYBOARD_BOUNDARY_POSITIONS)):
+        x.append(KEYBOARD_BOUNDARY_POSITIONS[i][0])
+        y.append(KEYBOARD_BOUNDARY_POSITIONS[i][1])
+        z.append(0)
     draw_heatmap_by_scatter(x, y, z)
 
 
