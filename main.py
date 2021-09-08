@@ -1,10 +1,11 @@
-from lib.cal_balance import balance
-from lib.cal_efficiency import efficiency
-from lib.constants import alphabet_dict_old
-from lib.count_text_alpha import count_text, count_character_number, count_press_number
+from spelling_type import SpellingType
+from spelling_type.parameters.balance.cal_balance import balance
+from spelling_type.parameters.efficiency.cal_efficiency import efficiency
+from spelling_type.count_text_alpha import count_text, count_character_number, count_press_number
 
 if __name__ == '__main__':
-    filename = 'data/text1.txt'
+    old_spelling_type = SpellingType()
+
     count = count_text(filename)
     print(count)
     print(balance(count))

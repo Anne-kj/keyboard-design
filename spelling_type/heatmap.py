@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 from scipy.interpolate import interp2d, griddata
 
-from lib.constants import alphabet
+from spelling_type.constants import alphabet
 
 KEYBOARD_BACKGROUND = '../data/keyboard2.png'
 KEYBOARD_KEY_POSITIONS = [
