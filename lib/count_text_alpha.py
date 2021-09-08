@@ -27,6 +27,11 @@ def count_character_number(filename: str):
     return character_number
 
 
+# 将拼音切分成声母和韵母
+def split_character(filename :str):
+
+
+
 # 统计使用全拼/新的编码方法所需的按键次数
 def count_press_number(filename: str, spelling_type: str):
     if spelling_type == "old":
