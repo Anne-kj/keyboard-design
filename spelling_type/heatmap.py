@@ -1,11 +1,11 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
-from scipy.interpolate import interp2d, griddata
+from scipy.interpolate import interp2d, griddata, RBFInterpolator
 
 from spelling_type.constants import alphabet
 
 KEYBOARD_BACKGROUND = '../data/keyboard2.png'
+# 采集到的 A - Z 的按键坐标
 KEYBOARD_KEY_POSITIONS = [
     (207, 371), (600, 454), (428, 453), (381, 373), (362, 274),
     (468, 365), (550, 363), (642, 368), (774, 287), (728, 368),
@@ -14,6 +14,8 @@ KEYBOARD_KEY_POSITIONS = [
     (708, 276), (508, 446), (274, 283), (335, 450), (623, 289),
     (259, 451)
 ]
+ALPHA_POSITIONS = {alphabet[i]: KEYBOARD_KEY_POSITIONS[i] for i in range(len(alphabet))}
+# 边界坐标
 KEYBOARD_BOUNDARY_POSITIONS = [
     (57, 201), (88, 201), (139, 203), (191, 203), (252, 203), (351, 212), (395, 206), (450, 207), (510, 206),
     (565, 204), (595, 204), (665, 202), (710, 200), (749, 200), (803, 201), (843, 206), (909, 204), (956, 199),
@@ -25,9 +27,6 @@ KEYBOARD_BOUNDARY_POSITIONS = [
     (1073, 190), (989, 170), (950, 169), (821, 188), (680, 185), (594, 180), (502, 179), (447, 179), (347, 179),
     (247, 179), (154, 176), (109, 185), (63, 179)
 ]
-ALPHA_POSITION = {}
-for i in range(len(alphabet)):
-    ALPHA_POSITION[alphabet[i]] = KEYBOARD_KEY_POSITIONS[i]
 
 
 # 根据 xyz 坐标的散点图绘制热力图
@@ -35,37 +34,49 @@ def draw_heatmap_by_scatter(x: list, y: list, z: list):
     # 读图片的长宽
     img = plt.imread(KEYBOARD_BACKGROUND)
     height, width = img.shape[0:2]
-
-    # ip = interp2d(x, y, z, kind='linear')
-    # x1 = np.arange(145, 1000)
-    # y1 = np.arange(250, 500)
-    x1 = np.arange(0, width)
-    y1 = np.arange(0, height)
-    # z2 = ip(x1, y1)
-    x2, y2 = np.meshgrid(x1, y1)
-
     x = np.asarray(x)
     y = np.asarray(y)
     z = np.asarray(z)
-    z2 = griddata((x, y), z, (x2, y2), method='linear')
+    x1 = np.arange(100, 1050)
+    y1 = np.arange(200, 500)
+    x2, y2 = np.meshgrid(x1, y1)
 
+    # 三种插值库
+    def interpolate_interp2d():
+        ip = interp2d(x, y, z, kind='linear')
+        z2 = ip(x1, y1)
+        return z2
+
+    def interpolate_griddata():
+        z2 = griddata((x, y), z, (x2, y2), method='linear')
+        return z2
+
+    def interpolate_rbf():
+        xy = np.stack([x.ravel(), y.ravel()], -1)  # shape (N, 2) in 2d
+        x2y2 = np.stack([x2.ravel(), y2.ravel()], -1)  # shape (N, 2) in 2d
+        ip = RBFInterpolator(xy, z.ravel(), smoothing=0, kernel='cubic')  # explicit default smoothing=0 for interpolation
+        z2 = ip(x2y2).reshape(x2.shape)  # not really a function, but a callable class instance
+        return z2
+
+    z2 = interpolate_rbf()
+
+    # 绘制热力图
     def draw_heatmap():
-        fig, ax = plt.subplots()
-        fig.set_dpi(300)
+        fig = plt.figure(dpi=300)
+        ax = plt.axes()
         ax.imshow(img)
-        im = ax.pcolormesh(x2, y2, z2, cmap='coolwarm', alpha=0.5, vmax=3000, vmin=0)
+        im = ax.pcolormesh(x2, y2, z2, cmap='coolwarm', alpha=0.5)
         # im = ax.contourf(x2, y2, z2, np.arange(0, 3000, 100),cmap='coolwarm', alpha=0.5, vmax=3000, vmin=0)
-        ax.scatter(x[0:26], y[0:26])
+        # ax.scatter(x[0:26], y[0:26])  # 绘制散点
         fig.colorbar(im, orientation='vertical')
         plt.show()
 
+    # 也可以绘制 3d 图
     def draw_3d():
-        fig = plt.figure(dpi=1000)  # 定义新的三维坐标轴
-        ax3 = plt.axes(projection='3d')
-
-        # 作图
-        ax3.plot_surface(x2, y2, z2, cmap='rainbow', vmax=2600, vmin=0)
-        # ax3.contour(X,Y,Z, zdim='z',offset=-2，cmap='rainbow)   #等高线图，要设置offset，为Z的最小值
+        fig = plt.figure(dpi=1000)
+        ax = plt.axes(projection='3d')
+        ax.plot_surface(x2, y2, z2, cmap='rainbow', vmax=2600, vmin=0)
+        # ax.contour(X,Y,Z, zdim='z',offset=-2，cmap='rainbow)
         plt.show()
 
     draw_heatmap()
@@ -75,8 +86,8 @@ def draw_heatmap_by_scatter(x: list, y: list, z: list):
 def draw_heatmap_by_alpha_count(alpha_count: dict):
     x, y, z = [], [], []
     for alpha in alphabet:
-        x.append(ALPHA_POSITION[alpha][0])
-        y.append(ALPHA_POSITION[alpha][1])
+        x.append(ALPHA_POSITIONS[alpha][0])
+        y.append(ALPHA_POSITIONS[alpha][1])
         z.append(alpha_count[alpha])
     for i in range(len(KEYBOARD_BOUNDARY_POSITIONS)):
         x.append(KEYBOARD_BOUNDARY_POSITIONS[i][0])
@@ -86,19 +97,6 @@ def draw_heatmap_by_alpha_count(alpha_count: dict):
 
 
 if __name__ == '__main__':
-    # n = 26
-    # x, y, z = [163], [277], [100]
-    # for i in range(n):
-    #     x.append(random()*1200)
-    #     y.append(random()*350)
-    #     z.append(0)
-
-    # x = [0, 100, 200, 0, 100, 200]
-    # y = [0, 0, 0, 300, 300, 300]
-    # z = [1, 2, 3, 4, 5, 6]
-    # draw_heatmap_scatter(x, y, z)
-
-    d = {}
-    for i in range(len(alphabet)):
-        d[alphabet[i]] = (i + 1) * 100
+    # 测试数据：{a: 100, b: 200, ... z: 2600}
+    d = {alphabet[i]: (i + 1) * 100 for i in range(len(alphabet))}
     draw_heatmap_by_alpha_count(d)
