@@ -2,9 +2,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 from scipy.interpolate import interp2d, griddata, RBFInterpolator
 
-from spelling_type.constants import alphabet
+from lib.spelling_type import alphabet
 
-KEYBOARD_BACKGROUND = '../data/keyboard2.png'
+KEYBOARD_BACKGROUND = '../data/keyboard.png'
 # 采集到的 A - Z 的按键坐标
 KEYBOARD_KEY_POSITIONS = [
     (207, 371), (600, 454), (428, 453), (381, 373), (362, 274),
@@ -83,12 +83,12 @@ def draw_heatmap_by_scatter(x: list, y: list, z: list):
 
 
 # 根据字母频度绘制热力图
-def draw_heatmap_by_alpha_count(alpha_count: dict):
+def draw_heatmap_by_key_number_dict(key_number_dict: dict):
     x, y, z = [], [], []
     for alpha in alphabet:
         x.append(ALPHA_POSITIONS[alpha][0])
         y.append(ALPHA_POSITIONS[alpha][1])
-        z.append(alpha_count[alpha])
+        z.append(key_number_dict[alpha])
     for i in range(len(KEYBOARD_BOUNDARY_POSITIONS)):
         x.append(KEYBOARD_BOUNDARY_POSITIONS[i][0])
         y.append(KEYBOARD_BOUNDARY_POSITIONS[i][1])
@@ -98,5 +98,5 @@ def draw_heatmap_by_alpha_count(alpha_count: dict):
 
 if __name__ == '__main__':
     # 测试数据：{a: 100, b: 200, ... z: 2600}
-    d = {alphabet[i]: (i + 1) * 100 for i in range(len(alphabet))}
-    draw_heatmap_by_alpha_count(d)
+    key_number_dict = {alphabet[i]: (i + 1) * 100 for i in range(len(alphabet))}
+    draw_heatmap_by_key_number_dict(key_number_dict)

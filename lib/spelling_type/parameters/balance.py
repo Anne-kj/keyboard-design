@@ -3,12 +3,7 @@ import numpy as np
 
 
 # 计算方差
-# d: 按键 -> 使用频次
-def balance(d: dict):
-    v = d.values()
+def cal_balance(key_number_dict: dict):
+    v = key_number_dict.values()
     variance = np.var(np.fromiter(v, float))
     return variance
-
-
-if __name__=='__main__':
-    print(1)
