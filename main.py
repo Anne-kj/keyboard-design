@@ -47,4 +47,4 @@ def find_new_pinyin():
 
 
 if __name__ == "__main__":
-    evaluate_old_quanpin()
+    find_new_pinyin()

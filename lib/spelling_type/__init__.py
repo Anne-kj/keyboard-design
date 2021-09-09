@@ -9,26 +9,22 @@ from lib.text_info import text_info
 
 
 class SpellingType:
-    # spelling_type 为 old 表示全拼，为 new 表示新的编码方法
-    spelling_type = ''
-    # 键盘与字母的对应关系
-    alpha_key_dict = {}
-    # 按键的频次
-    key_number_dict = {i: 0 for i in alphabet}
-    key_number_total = 0
-    # 各类指标
-    balance = 0
-    correspondence = 0
-    key_character_ratio = 0
-    average_distance_between_keys = 0
-    efficiency = 0
-    score = 0
-
-    # spelling_type 为 old 表示全拼，为 new 表示新的编码方法
     def __init__(self, alpha_key_dict: dict, spelling_type: str):
+        # spelling_type 为 old 表示全拼，为 new 表示新的编码方法
         self.spelling_type = spelling_type
-
+        # 键盘与字母的对应关系
         self.alpha_key_dict = alpha_key_dict.copy()
+        # 按键的频次
+        self.key_number_dict = {i: 0 for i in alphabet}
+        self.key_number_total = 0
+        # 各类指标
+        self.balance = 0
+        self.correspondence = 0
+        self.key_character_ratio = 0
+        self.average_distance_between_keys = 0
+        self.efficiency = 0
+        self.score = 0
+
         if spelling_type == "old":
             self.key_number_dict = text_info.alpha_number_dict.copy()
         else:
