@@ -4,6 +4,7 @@ from lib.spelling_type.parameters.balance import cal_balance
 from lib.spelling_type.parameters.efficiency.cal_efficiency import efficiency
 from lib.spelling_type.parameters.efficiency.ck_ratio import cal_character_key_ratio
 from lib.spelling_type.parameters.efficiency.correspondence import cal_correspondence
+from lib.spelling_type.parameters.efficiency.distance import cal_average_distance_between_keys
 from lib.text_info import text_info
 
 
@@ -18,7 +19,7 @@ class SpellingType:
     balance = None
     correspondence = None
     character_key_ratio = None
-    distance_between_keys = None
+    average_distance_between_keys = None
 
     # spelling_type 为 old 表示全拼，为 new 表示新的编码方法
     def __init__(self, alphabet_key_dict: dict, spelling_type: str):
@@ -37,7 +38,7 @@ class SpellingType:
         self.balance = cal_balance(self.key_number_dict)
         self.correspondence = cal_correspondence(self.alphabet_key_dict)
         self.character_key_ratio = cal_character_key_ratio(sum(self.key_number_dict.values()))
-        self.distance_between_keys = distance()
+        self.average_distance_between_keys = cal_average_distance_between_keys()
         # 加权求和
 
     def draw_heatmap(self):

@@ -23,16 +23,22 @@ class TextInfo:
     alpha_number_total = 0
     # 文本中每个字母对应的频次
     alpha_number_dict = {i: 0 for i in list(alphabet)}
+    # dict[i][j] 表示文本中字母 i 后面紧接的字母是 j 的频次
+    alpha_number_2d_dict = {i: {i: 0 for i in list(alphabet)} for i in list(alphabet)}
     # 文本中声母韵母总数
     initial_final_number_total = 0
     # 文本中每个声母和韵母对应的频次
     initial_final_number_dict = {i: 0 for i in initials + finals}
+    # dict[i][j] 表示文本中声母/韵母 i 后面紧接的声母/韵母是 j 的频次
+    initial_final_number_2d_dict = {i: {i: 0 for i in initials + finals} for i in initials + finals}
 
     def __init__(self, filename):
         with open(filename, encoding='utf-8') as f:
             self.text = f.read()
 
         p = Pinyin()
+        last_alpha = ''
+        last_final = ''
         for word in self.text:
             # 统计汉字个数
             if '\u4e00' <= word <= '\u9fff':
@@ -47,6 +53,21 @@ class TextInfo:
                     self.initial_final_number_dict[initial] += 1
                 if final:
                     self.initial_final_number_dict[final] += 1
+                # 统计 alpha_number_2d_dict
+                if last_alpha:
+                    self.alpha_number_2d_dict[last_alpha][word[0]] += 1
+                for i in range(len(word) - 1):
+                    self.alpha_number_2d_dict[word[i]][word[i + 1]] += 1
+                # 统计 initial_final_number_2d_dict
+                if last_final:
+                    if initial:
+                        self.initial_final_number_2d_dict[last_final][initial] += 1
+                    else:
+                        self.initial_final_number_2d_dict[last_final][final] += 1
+                if initial:
+                    self.initial_final_number_2d_dict[initial][final] += 1
+                last_alpha = word[-1]
+                last_final = final
         # 统计所有字母的总频次
         self.alpha_number_total = sum(self.alpha_number_dict)
         # 统计声母+韵母的总个数

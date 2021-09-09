@@ -4,7 +4,7 @@ from scipy.interpolate import interp2d, griddata, RBFInterpolator
 
 from lib.spelling_type import alphabet
 
-KEYBOARD_BACKGROUND = '../data/keyboard.png'
+KEYBOARD_BACKGROUND = 'data\\keyboard.png'
 # 采集到的 A - Z 的按键坐标
 KEYBOARD_KEY_POSITIONS = [
     (207, 371), (600, 454), (428, 453), (381, 373), (362, 274),
