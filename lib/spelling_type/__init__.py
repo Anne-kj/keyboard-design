@@ -26,8 +26,6 @@ class SpellingType:
 
     # spelling_type 为 old 表示全拼，为 new 表示新的编码方法
     def __init__(self, alpha_key_dict: dict, spelling_type: str):
-        if spelling_type not in ("old", "new"):
-            raise ValueError
         self.spelling_type = spelling_type
 
         self.alpha_key_dict = alpha_key_dict.copy()
@@ -50,17 +48,18 @@ class SpellingType:
         self.efficiency = (10 - 1 / self.correspondence) \
                           + 12 / self.key_character_ratio \
                           + 0.2 / self.average_distance_between_keys
-        self.score = self.balance * self.efficiency
+        self.score = self.balance + self.efficiency
 
-    def draw_heatmap(self):
+    def draw_heatmap(self, filename: str = None):
         key_frequency_dict = {}
         for key, value in self.key_number_dict.items():
             key_frequency_dict[key] = value / self.key_number_total
 
-        draw_heatmap_by_key_number_dict(key_frequency_dict)
+        draw_heatmap_by_key_number_dict(key_frequency_dict, filename)
 
     def show_parameters(self):
         print(f'''
+拼音方案：{self.spelling_type}
 1. 均衡性——按键频率方差的倒数（越高越好）：{self.balance}
 2. 输入效率——和拼音的对应程度（越高越好）：{self.correspondence}
 3. 输入效率——总按键频率（越低越好）：{self.key_character_ratio}
@@ -68,3 +67,15 @@ class SpellingType:
 5. 综合输入效率（越高越好）：{self.efficiency}
 6. 编码方法综合评价（越高越好）：{self.score}
 ''')
+
+    # 输出以便 Excel、数据库等工具处理
+    def get_parameters(self):
+        return [
+            self.spelling_type,
+            self.balance,
+            self.correspondence,
+            self.key_character_ratio,
+            self.average_distance_between_keys,
+            self.efficiency,
+            self.score
+        ]

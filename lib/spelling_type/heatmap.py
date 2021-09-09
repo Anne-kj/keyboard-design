@@ -6,7 +6,7 @@ from lib.spelling_type import alphabet
 import warnings
 
 warnings.filterwarnings("ignore",category=UserWarning)
-KEYBOARD_BACKGROUND = "data\\keyboard.png"
+KEYBOARD_BACKGROUND = "data/keyboard.png"
 # 采集到的 A - Z 的按键坐标
 KEYBOARD_KEY_POSITIONS = [
     (207, 371), (600, 454), (428, 453), (381, 373), (362, 274),
@@ -32,7 +32,7 @@ KEYBOARD_BOUNDARY_POSITIONS = [
 
 
 # 根据 xyz 坐标的散点图绘制热力图
-def draw_heatmap_by_scatter(x: list, y: list, z: list):
+def draw_heatmap_by_scatter(x: list, y: list, z: list, filename: str = None):
     # 读图片的长宽
     img = plt.imread(KEYBOARD_BACKGROUND)
     height, width = img.shape[0:2]
@@ -71,7 +71,10 @@ def draw_heatmap_by_scatter(x: list, y: list, z: list):
         # im = ax.contourf(x2, y2, z2, np.arange(0, 3000, 100),cmap="coolwarm", alpha=0.5, vmax=3000, vmin=0)
         # ax.scatter(x[0:26], y[0:26])  # 绘制散点
         fig.colorbar(im, orientation="vertical")
-        plt.show()
+        if filename:
+            plt.savefig(filename)
+        else:
+            plt.show()
 
     # 也可以绘制 3d 图
     def draw_3d():
@@ -79,13 +82,16 @@ def draw_heatmap_by_scatter(x: list, y: list, z: list):
         ax = plt.axes(projection="3d")
         ax.plot_surface(x2, y2, z2, cmap="rainbow", vmax=2600, vmin=0)
         # ax.contour(X,Y,Z, zdim="z",offset=-2，cmap="rainbow)
-        plt.show()
+        if filename:
+            plt.savefig(filename)
+        else:
+            plt.show()
 
     draw_heatmap()
 
 
 # 根据字母频度绘制热力图
-def draw_heatmap_by_key_number_dict(key_number_dict: dict):
+def draw_heatmap_by_key_number_dict(key_number_dict: dict, filename: str = None):
     x, y, z = [], [], []
     for alpha in alphabet:
         x.append(ALPHA_POSITIONS[alpha][0])
@@ -95,7 +101,7 @@ def draw_heatmap_by_key_number_dict(key_number_dict: dict):
         x.append(KEYBOARD_BOUNDARY_POSITIONS[i][0])
         y.append(KEYBOARD_BOUNDARY_POSITIONS[i][1])
         z.append(0)
-    draw_heatmap_by_scatter(x, y, z)
+    draw_heatmap_by_scatter(x, y, z, filename)
 
 
 if __name__ == "__main__":

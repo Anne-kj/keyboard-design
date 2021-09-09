@@ -76,4 +76,4 @@ class TextInfo:
         print(f"完成，汉字总数：{self.character_number_total}")
 
 
-text_info = TextInfo("data\\text1.txt")
+text_info = TextInfo("data/text1.txt")
