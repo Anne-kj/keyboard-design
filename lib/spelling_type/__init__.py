@@ -70,7 +70,7 @@ class SpellingType:
 
     # 输出以便 Excel、数据库等工具处理
     def get_parameters(self):
-        return [
+        return map(str, [
             self.spelling_type,
             self.balance,
             self.correspondence,
@@ -78,4 +78,4 @@ class SpellingType:
             self.average_distance_between_keys,
             self.efficiency,
             self.score
-        ]
+        ])

@@ -1,6 +1,6 @@
 from lib.constants import alphabet
 from lib.spelling_type import SpellingType
-from lib.spelling_type.test import test_alpha_key_dicts
+from lib.spelling_type.random import generate_alpha_key_dict_randomly
 
 
 def evaluate_old_quanpin():
@@ -10,7 +10,15 @@ def evaluate_old_quanpin():
     old_spelling_type.show_parameters()
 
 
+def evaluate_specific_shuangpin(alpha_key_dict):
+    old_spelling_type = SpellingType(alpha_key_dict, "specific")
+    old_spelling_type.draw_heatmap()
+    old_spelling_type.cal_parameters()
+    old_spelling_type.show_parameters()
+
+
 def evaluate_common_shuangpin():
+    from lib.spelling_type.test import test_alpha_key_dicts
     for alpha_key_dict, spelling_name in test_alpha_key_dicts:
         spelling_type = SpellingType(alpha_key_dict, spelling_name)
         spelling_type.draw_heatmap(spelling_name + '.png')
@@ -31,7 +39,7 @@ def find_new_pinyin():
         spelling_type.cal_parameters()
         buffer += '|'.join(spelling_type.get_parameters())
         buffer += '\n'
-        if i %  BATCH == 0:
+        if i % BATCH == 0:
             print(f'已完成{i}组')
             with open(output_filename, 'a+', encoding='utf-8') as f:
                 f.write(buffer)
@@ -39,4 +47,4 @@ def find_new_pinyin():
 
 
 if __name__ == "__main__":
-
+    evaluate_old_quanpin()
