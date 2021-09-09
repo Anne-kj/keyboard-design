@@ -5,7 +5,7 @@
 from lib.spelling_type import alphabet
 
 
-def efficiency(alphabet_key_dict):
+def efficiency(alpha_key_dict):
     effi = 0
     # 指标 1：对应程度
     correspondence = 0

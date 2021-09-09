@@ -3,8 +3,10 @@ from matplotlib import pyplot as plt
 from scipy.interpolate import interp2d, griddata, RBFInterpolator
 
 from lib.spelling_type import alphabet
+import warnings
 
-KEYBOARD_BACKGROUND = 'data\\keyboard.png'
+warnings.filterwarnings("ignore",category=UserWarning)
+KEYBOARD_BACKGROUND = "data\\keyboard.png"
 # 采集到的 A - Z 的按键坐标
 KEYBOARD_KEY_POSITIONS = [
     (207, 371), (600, 454), (428, 453), (381, 373), (362, 274),
@@ -43,18 +45,18 @@ def draw_heatmap_by_scatter(x: list, y: list, z: list):
 
     # 三种插值库
     def interpolate_interp2d():
-        ip = interp2d(x, y, z, kind='linear')
+        ip = interp2d(x, y, z, kind="linear")
         z2 = ip(x1, y1)
         return z2
 
     def interpolate_griddata():
-        z2 = griddata((x, y), z, (x2, y2), method='linear')
+        z2 = griddata((x, y), z, (x2, y2), method="linear")
         return z2
 
     def interpolate_rbf():
         xy = np.stack([x.ravel(), y.ravel()], -1)  # shape (N, 2) in 2d
         x2y2 = np.stack([x2.ravel(), y2.ravel()], -1)  # shape (N, 2) in 2d
-        ip = RBFInterpolator(xy, z.ravel(), smoothing=0, kernel='cubic')  # explicit default smoothing=0 for interpolation
+        ip = RBFInterpolator(xy, z.ravel(), smoothing=0, kernel="cubic")  # explicit default smoothing=0 for interpolation
         z2 = ip(x2y2).reshape(x2.shape)  # not really a function, but a callable class instance
         return z2
 
@@ -65,18 +67,18 @@ def draw_heatmap_by_scatter(x: list, y: list, z: list):
         fig = plt.figure(dpi=300)
         ax = plt.axes()
         ax.imshow(img)
-        im = ax.pcolormesh(x2, y2, z2, cmap='coolwarm', alpha=0.5)
-        # im = ax.contourf(x2, y2, z2, np.arange(0, 3000, 100),cmap='coolwarm', alpha=0.5, vmax=3000, vmin=0)
+        im = ax.pcolormesh(x2, y2, z2, cmap="coolwarm", alpha=0.5)
+        # im = ax.contourf(x2, y2, z2, np.arange(0, 3000, 100),cmap="coolwarm", alpha=0.5, vmax=3000, vmin=0)
         # ax.scatter(x[0:26], y[0:26])  # 绘制散点
-        fig.colorbar(im, orientation='vertical')
+        fig.colorbar(im, orientation="vertical")
         plt.show()
 
     # 也可以绘制 3d 图
     def draw_3d():
         fig = plt.figure(dpi=1000)
-        ax = plt.axes(projection='3d')
-        ax.plot_surface(x2, y2, z2, cmap='rainbow', vmax=2600, vmin=0)
-        # ax.contour(X,Y,Z, zdim='z',offset=-2，cmap='rainbow)
+        ax = plt.axes(projection="3d")
+        ax.plot_surface(x2, y2, z2, cmap="rainbow", vmax=2600, vmin=0)
+        # ax.contour(X,Y,Z, zdim="z",offset=-2，cmap="rainbow)
         plt.show()
 
     draw_heatmap()
@@ -96,7 +98,8 @@ def draw_heatmap_by_key_number_dict(key_number_dict: dict):
     draw_heatmap_by_scatter(x, y, z)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # 测试数据：{a: 100, b: 200, ... z: 2600}
     key_number_dict = {alphabet[i]: (i + 1) * 100 for i in range(len(alphabet))}
     draw_heatmap_by_key_number_dict(key_number_dict)
+

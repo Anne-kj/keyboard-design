@@ -1,4 +1,5 @@
 from lib.constants import alphabet
+from lib.text_info import text_info
 
 
 class KeyDistance:
@@ -13,7 +14,7 @@ class KeyDistance:
                            3: ["rb", "ym"]}
 
     def __init__(self):
-        for dis, pairs in self.distance_pairs_dict:
+        for dis, pairs in self.distance_pairs_dict.items():
             for pair in pairs:
                 a, b = list(pair)
                 self.distance[a][b] = dis
@@ -23,5 +24,13 @@ class KeyDistance:
 key_distance = KeyDistance()
 
 
-def cal_average_distance_between_keys():
-    pass
+def cal_average_distance_between_keys(alpha_key_dict: dict, key_number_total: int, spelling_type: str) -> float:
+    key_distance_total = 0
+    if spelling_type == "old":
+        alpha_number_2d_dict = text_info.alpha_number_2d_dict
+    else:
+        alpha_number_2d_dict = text_info.initial_final_number_2d_dict
+    for i in alpha_number_2d_dict.keys():
+        for j in alpha_number_2d_dict[i].keys():
+            key_distance_total += key_distance.distance[alpha_key_dict[i]][alpha_key_dict[j]] * alpha_number_2d_dict[i][j]
+    return key_distance_total / key_number_total

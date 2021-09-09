@@ -33,7 +33,8 @@ class TextInfo:
     initial_final_number_2d_dict = {i: {i: 0 for i in initials + finals} for i in initials + finals}
 
     def __init__(self, filename):
-        with open(filename, encoding='utf-8') as f:
+        print(f"{filename} 文本解析中...", end='')
+        with open(filename, encoding="utf-8") as f:
             self.text = f.read()
 
         p = Pinyin()
@@ -41,11 +42,11 @@ class TextInfo:
         last_final = ''
         for word in self.text:
             # 统计汉字个数
-            if '\u4e00' <= word <= '\u9fff':
+            if "\u4e00" <= word <= "\u9fff":
                 self.character_number_total += 1
                 pinyin = p.get_pinyin(word)
                 # 分别统计拼音的每个字母对应频次
-                for c in word:
+                for c in pinyin:
                     self.alpha_number_dict[c] += 1
                 # 统计声母韵母个数
                 initial, final = split_pinyin(pinyin)
@@ -55,9 +56,9 @@ class TextInfo:
                     self.initial_final_number_dict[final] += 1
                 # 统计 alpha_number_2d_dict
                 if last_alpha:
-                    self.alpha_number_2d_dict[last_alpha][word[0]] += 1
-                for i in range(len(word) - 1):
-                    self.alpha_number_2d_dict[word[i]][word[i + 1]] += 1
+                    self.alpha_number_2d_dict[last_alpha][pinyin[0]] += 1
+                for i in range(len(pinyin) - 1):
+                    self.alpha_number_2d_dict[pinyin[i]][pinyin[i + 1]] += 1
                 # 统计 initial_final_number_2d_dict
                 if last_final:
                     if initial:
@@ -66,12 +67,13 @@ class TextInfo:
                         self.initial_final_number_2d_dict[last_final][final] += 1
                 if initial:
                     self.initial_final_number_2d_dict[initial][final] += 1
-                last_alpha = word[-1]
+                last_alpha = pinyin[-1]
                 last_final = final
         # 统计所有字母的总频次
-        self.alpha_number_total = sum(self.alpha_number_dict)
+        self.alpha_number_total = sum(self.alpha_number_dict.values())
         # 统计声母+韵母的总个数
-        self.initial_final_number_total = sum(self.initial_final_number_dict)
+        self.initial_final_number_total = sum(self.initial_final_number_dict.values())
+        print(f"完成，汉字总数：{self.character_number_total}")
 
 
 text_info = TextInfo("data\\text1.txt")
