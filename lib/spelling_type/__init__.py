@@ -47,7 +47,7 @@ class SpellingType:
                                               self.key_number_total,
                                               self.spelling_type)
         # 加权求和
-        self.efficiency = self.correspondence * 5 \
+        self.efficiency = (10 - 1 / self.correspondence) \
                           + 12 / self.key_character_ratio \
                           + 0.2 / self.average_distance_between_keys
         self.score = self.balance * self.efficiency
